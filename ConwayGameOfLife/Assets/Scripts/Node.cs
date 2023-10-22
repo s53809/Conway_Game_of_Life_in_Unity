@@ -21,6 +21,10 @@ public class Node
 
     public override int GetHashCode()
     {
-        return base.GetHashCode();
+        if (k == 0) return (Int32)0;
+        else return nw.GetHashCode() +
+                11 * ne.GetHashCode() +
+                101 * sw.GetHashCode() +
+                1007 * se.GetHashCode();
     }
 }

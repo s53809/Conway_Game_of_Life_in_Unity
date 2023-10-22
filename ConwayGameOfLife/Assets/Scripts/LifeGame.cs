@@ -7,6 +7,9 @@ public class LifeGame : MonoBehaviour {
     [SerializeField] private GameObject m_cell;
     [SerializeField] private Int64 m_size = 32;
     [SerializeField] private Single m_speed = 1f;
+    [SerializeField] private GridRenderer m_grid;
+    [SerializeField] private SquarePool m_pool;
+    [SerializeField] private Single m_mouseSpeed = 1f;
 
     private Square[,] Cell;
 
@@ -14,20 +17,20 @@ public class LifeGame : MonoBehaviour {
 
     private void Awake()
     {
-        Cell = new Square[m_size, m_size];
-        for(Int32 i = 0; i < m_size; i++)
-        {
-            for(Int32 j = 0; j < m_size; j++)
-            {
-                Square obj = Instantiate(m_cell, transform).GetComponent<Square>();
-                obj.transform.position = new Vector3(i - (m_size / 2), j - (m_size / 2), 0);
-                obj.SetCell(false);
-                Cell[i,j] = obj;
-            }
-        }
-
         on = new Node(0, null, null, null, null, 1);
         off = new Node(0, null, null, null, null, 0);
+    }
+
+    private void OnValidate()
+    {
+        if(m_size >= 0 && m_grid != null)
+        {
+            m_grid.OnUpdate(m_size);
+        }
+        if(m_mouseSpeed >= 0 && m_pool != null)
+        {
+            m_pool.OnUpdate(m_mouseSpeed);
+        }
     }
 
     private Node Join(Node a, Node b, Node c, Node d)
@@ -42,7 +45,7 @@ public class LifeGame : MonoBehaviour {
         else return Join(GetZero(k - 1), GetZero(k - 1), GetZero(k - 1), GetZero(k - 1));
     }
 
-    private Node Centre(Node m)
+    private Node Center(Node m)
     {
         Node z = GetZero(m.k - 1);
         return Join(
@@ -75,7 +78,11 @@ public class LifeGame : MonoBehaviour {
         {
             if (j == 0) j = m.k - 2;
             else j = Math.Min(j, m.k - 2);
-            
+            Node c1 = NextGene(Join(m.nw.nw, m.nw.ne, m.nw.sw, m.nw.se));
+            Node c2 = NextGene(Join(m.nw.ne, m.ne.nw, m.nw.se, m.ne.sw));
+            Node c3 = NextGene(Join(m.ne.nw, m.ne.ne, m.ne.sw, m.ne.se));
+            Node c4 = NextGene(Join(m.nw.sw, m.nw.se, m.sw.nw, m.sw.ne));
+
         }
         return s;
     }
